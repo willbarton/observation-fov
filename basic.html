@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <form id="settings">
+    <label for="sensor-size">Sensor Size (mm)</label>
+    <select id="sensor-size">
+      <option value="APS-C">APS-C (23.6mm x 15.7mm)</option>
+      <option value="APS-C Canon">APS-C Canon (22.2mm x 14.8mm)</option>
+      <option value="Full Frame">Full Frame (36mm x 24mm)</option>
+      <option value="Four Thirds">Four Thirds (17.3mm x 13mm)</option>
+      <option value="1 inch">1" (13.2mm x 8.8mm)</option>
+      <option value="other">Other</option>
+    </select>
+    <input type="text" placeholder="Sensor Width (mm)" id="sensor-width"> 
+    <input type="text" placeholder="Sensor Height (mm)" id="sensor-height">
+
+    <label for="focal-length">Focal Length (mm)</label>
+    <input type="text" placeholder="Focal Length (mm)" id="focal-length"> 
+
+    <label for="focal-reducer">Focal Reducer</label>
+    <input type="text" placeholder="Focal Reducer" id="focal-reducer" value="1"> 
+  </form>
+
+  <form id="results">
+    <label for="fov">Field of View (arc minutes)</label>
+    <input type="text" placeholder="Field of View (arc minutes)" id="fov" disabled="true"> 
+
+    <label for="preview-custom">Preview</label>
+    <input type="text" placeholder="Object Designation (M31, NGC 6860)" id="preview-custom">
+    <img id="preview-loading" src="/images/ApertureBlades.gif" style="position: absolute; top: 4px; right: 4px; width: 30px; height: 30px; display: none;">
+  </form>
+
+  <div style="position: relative;">
+    <div id="frame-overlay" style="position: absolute; z-index: 100; border: 2px solid red;"></div>
+    <img  data-coverage="4" id="preview-image" src="" width="600" height="600">
+  </div>
+
+  <p class="muted">Custom object queries make take a little bit of time. Preview frame lines are intended to give a rough visual estimate of the field of view. Images are all from <a href="http://skyview.gsfc.nasa.gov/current/cgi/titlepage.pl">NASA's SkyView</a>.</p>
+
+  <script src="/js/jquery.min.js" charset="utf-8"></script>
+  <script src="/js/fov.js" charset="utf-8"></script>
+</body>
+</html>
