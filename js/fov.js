@@ -1,3 +1,17 @@
+jQuery.extend({
+    // http://stackoverflow.com/a/8649003
+    deparam: function() {
+        var search = window.location.search.substring(1);
+        if (search != '') {
+            var decoded_params = decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"');
+            return JSON.parse('{"' + decoded_params + '"}');
+        } else {
+            return {};
+        }
+    }
+});
+
+
 // Simple mapping of sensor size name to [width,height]
 var sensor_sizes = {
     'APS-C': [23.6, 15.7],
@@ -6,6 +20,15 @@ var sensor_sizes = {
     'Four Thirds': [17.3,13],
     '1 inch': [13.2,8.8],
     'other': [NaN, NaN]
+}
+
+var defaults = {
+    'sensor-size': 'APS-C',
+    'sensor-width': '',
+    'sensor-height': '',
+    'focal-length': '',
+    'focal-reducer': '1',
+    'preview-custom': ''
 }
 
 // Update the fov field
@@ -59,8 +82,13 @@ function update_fov() {
     $('#fov').val(fov_width_arc.toFixed(1) + "' x " + fov_height_arc.toFixed(1) + "'");
 
     draw_frame(fov_width_deg, fov_height_deg);
+
+    // Save the state in the URL
+    update_url();
 }    
 
+// Draw the framelines in the preview image based on the sensor size,
+// focal length, and focal reducer
 function draw_frame(fov_width_deg, fov_height_deg) {
     var  preview_coverage = $('#preview-image').attr('data-coverage');
 
@@ -77,6 +105,7 @@ function draw_frame(fov_width_deg, fov_height_deg) {
     $('#frame-overlay').css('left', frame_left);
 }
 
+// Update the preview image with a new object query
 function update_preview(e) {
     var preview_custom = $('#preview-custom').val();
     if (preview_custom != '') {
@@ -93,8 +122,13 @@ function update_preview(e) {
 
     $('#preview-image').attr('src', preview_image);
     $('#preview-image').attr('data-coverage', '4');
+
+    // Save the state in the URL
+    update_url();
 }
 
+// Toggle the sensor width and height fields based on whether the
+// selected sensor size is "other"
 function toggle_width_height() {
     console.log("toggling width and height")
     var sensor_size = $('#sensor-size').val();
@@ -111,7 +145,59 @@ function toggle_width_height() {
     }
 }
 
+// Get the overall state of the app, as it differs from the defaults
+function get_state() {
+    var state = {};
+    for (var key of Object.keys(defaults)) {
+        var value = $('#' + key).val();
+        if (value != defaults[key]) {
+            state[key] = value;
+        }
+    }
+    return state;
+}
+
+// Load state from the URL parameters
+function load_state() {
+    var state = $.deparam();
+
+    // For each state variable, set it only if it differs from the
+    // default, and perform the necessary UI updates.
+    for (var key of Object.keys(state)) {
+        if (state[key] != defaults[key]) {
+            console.log("setting", key, state[key])
+            $('#' + key).val(state[key])
+
+            if (key == 'preview-custom') {
+                udpate_preview();
+            } else {
+                update_fov();
+            }
+        }
+    }
+}
+
+// Update the URL/history based on parameter selection
+function update_url() {
+    if (history.pushState) {
+        var current_params = window.location.search.substring(1);
+        var new_params = $.param(get_state(), true);
+
+        if (new_params != current_params) {
+            var base_url = window.location.href.split('?')[0];
+            var url = base_url + '?' + new_params;
+            window.history.pushState({path: url}, '', url);
+        }
+    }
+}
+
 $(document).ready(function() {
+
+    // Load any state we get from paramers
+    load_state();
+
+    // Now set up our events
+
     // If sensor-size is changed, and it's "other", show the
     // width/height fields
     // $('#sensor-size').change(update_fov);
