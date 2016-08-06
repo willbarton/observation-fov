@@ -108,6 +108,7 @@ function draw_frame(fov_width_deg, fov_height_deg) {
 // Update the preview image with a new object query
 function update_preview(e) {
     var preview_custom = $('#preview-custom').val();
+    console.log("searching for", preview_custom);
     if (preview_custom != '') {
         console.log("Getting", preview_custom);
         var custom_encoded = encodeURIComponent(preview_custom);
@@ -169,7 +170,8 @@ function load_state() {
             $('#' + key).val(state[key])
 
             if (key == 'preview-custom') {
-                udpate_preview();
+                console.log("updating preview");
+                update_preview();
             } else {
                 update_fov();
             }
