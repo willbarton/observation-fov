@@ -28,7 +28,8 @@ var defaults = {
     'sensor-height': '',
     'focal-length': '',
     'focal-reducer': '1',
-    'preview-custom': ''
+    'preview-custom': 'M31',
+    'preview-coverage': '4'
 }
 
 // Update the fov field
@@ -100,7 +101,7 @@ function update_fov() {
 // Draw the framelines in the preview image based on the sensor size,
 // focal length, and focal reducer
 function draw_frame(fov_width_deg, fov_height_deg) {
-    var  preview_coverage = $('#preview-image').attr('data-coverage');
+    var preview_coverage = parseInt($('#preview-coverage').val());
 
     // Draw frame over preview image
     var image_size = $('#preview-image').width();
@@ -118,21 +119,28 @@ function draw_frame(fov_width_deg, fov_height_deg) {
 // Update the preview image with a new object query
 function update_preview(e) {
     var preview_custom = $('#preview-custom').val();
+    var preview_coverage = parseInt($('#preview-coverage').val());
     console.log("searching for", preview_custom);
+
     if (preview_custom != '') {
         console.log("Getting", preview_custom);
         var custom_encoded = encodeURIComponent(preview_custom);
-        preview_image = 'http://skyview.gsfc.nasa.gov/cgi-bin/images?Position=' + custom_encoded + '&Survey=DSS&Coordinates=J2000&pixels=600&size=4&Return=JPG'
+        preview_image = 'http://skyview.gsfc.nasa.gov/cgi-bin/images?Position=' + custom_encoded + '&Survey=DSS&Coordinates=J2000&pixels=600&size=' + preview_coverage + '&Return=JPG'
 
         // Provide some feedback for custom image loads
         $('#preview-loading').css('display', 'block');
         $('#preview-image').load(function() {
             $('#preview-loading').css('display', 'none');
         });
-    }
+    } 
 
     $('#preview-image').attr('src', preview_image);
-    $('#preview-image').attr('data-coverage', '4');
+
+    // Update the fov for this coverage, if it's changed.
+    if ($('#preview-image').attr('data-coverage') != preview_coverage) {
+        update_fov();
+        $('#preview-image').attr('data-coverage', '4');
+    }
 
     // Save the state in the URL
     update_state();
@@ -204,13 +212,9 @@ $(document).ready(function() {
     $('#focal-length').change(update_fov);
     $('#focal-reducer').change(update_fov);
 
-    // $('#preview').change(function() {
-    //     $('#preview-custom').val('')
-    //     update_preview();
-    // });
     $('#preview-custom').change(update_preview);
+    // $('#preview-coverage').change(update_preview);
 
     // Load any state we get from paramers
     load_state();
 });
-

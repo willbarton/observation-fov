@@ -27,11 +27,19 @@
 
         <div class="four columns">
           <form id="settings">
-            <label for="preview">Preview</label>
+            <label for="preview-custom">Preview</label>
             <div id="preview-field">
-              <input class="u-full-width" type="text" placeholder="Object (M31, NGC 6860)" id="preview-custom">
+              <input class="u-full-width" type="text" placeholder="Object (M31, NGC 6860)" id="preview-custom" value="M31">
               <img id="preview-loading" src="images/ApertureBlades.gif">
             </div>
+            <!-- 
+            <label for="preview-coverage">Preview Coverage (degrees)</label>
+            <div id="preview-field">
+              <input class="u-full-width" type="text" placeholder="Integer" id="preview-coverage" value="4">
+              <img id="preview-loading" src="images/ApertureBlades.gif">
+            </div>
+            -->
+              <input class="u-full-width" type="hidden" placeholder="Integer" id="preview-coverage" value="4">
             
             <label for="sensor-size">Sensor Size (mm)</label>
             <select class="u-full-width" id="sensor-size">
