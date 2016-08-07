@@ -33,22 +33,19 @@ var defaults = {
 
 // Update the fov field
 function update_fov() {
-    // Get the focal length. If it isn't entered, bail because we
-    // can't do anything without it.
-    var focal_length = parseFloat($('#focal-length').val());
-    if (Number.isNaN(focal_length == NaN)) {
-        return;
-    }
-
-    // Get the focal reducer multiplier
-    var focal_reducer = parseFloat($('#focal-reducer').val());
-    if (!Number.isNaN(focal_length)) {
-        focal_length = focal_length * focal_reducer;
-    }
-
     // Get the sensor size. If the text fields aren't used, just use
     // the drop-down value.
     var sensor_size = $('#sensor-size').val();
+    if (sensor_size == "other") {
+        $('#sensor-width').show();
+        $('#sensor-height').show();
+        return;
+    } else {
+        $('#sensor-width').val('');
+        $('#sensor-height').val('');
+        $('#sensor-width').hide();
+        $('#sensor-height').hide();
+    }
 
     var sensor_width = parseFloat($('#sensor-width').val());
     if (Number.isNaN(sensor_width)) {
@@ -60,6 +57,19 @@ function update_fov() {
     if (Number.isNaN(sensor_height)) {
         console.log(sensor_sizes[sensor_size][1]);
         sensor_height = sensor_sizes[sensor_size][1];
+    }
+
+    // Get the focal length. If it isn't entered, bail because we
+    // can't do anything without it.
+    var focal_length = parseFloat($('#focal-length').val());
+    if (Number.isNaN(focal_length == NaN)) {
+        return;
+    }
+
+    // Get the focal reducer multiplier
+    var focal_reducer = parseFloat($('#focal-reducer').val());
+    if (!Number.isNaN(focal_length)) {
+        focal_length = focal_length * focal_reducer;
     }
 
     if (Number.isNaN(sensor_width) || Number.isNaN(sensor_height)) {
@@ -128,24 +138,6 @@ function update_preview(e) {
     update_url();
 }
 
-// Toggle the sensor width and height fields based on whether the
-// selected sensor size is "other"
-function toggle_width_height() {
-    console.log("toggling width and height")
-    var sensor_size = $('#sensor-size').val();
-    console.log(sensor_size)
-    if (sensor_size == "other") {
-        $('#sensor-width').show();
-        $('#sensor-height').show();
-    } else {
-        $('#sensor-width').val('');
-        $('#sensor-height').val('');
-        $('#sensor-width').hide();
-        $('#sensor-height').hide();
-        update_fov();
-    }
-}
-
 // Get the overall state of the app, as it differs from the defaults
 function get_state() {
     var state = {};
@@ -202,8 +194,7 @@ $(document).ready(function() {
 
     // If sensor-size is changed, and it's "other", show the
     // width/height fields
-    // $('#sensor-size').change(update_fov);
-    $('#sensor-size').change(toggle_width_height);
+    $('#sensor-size').change(update_fov);
     $('#sensor-width').change(update_fov);
     $('#sensor-height').change(update_fov);
     $('#focal-length').change(update_fov);
