@@ -3,7 +3,7 @@ jQuery.extend({
     deparam: function() {
         var search = window.location.search.substring(1);
         if (search != '') {
-            var decoded_params = decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"');
+            var decoded_params = decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"').replace(/\+/g, ' ');
             return JSON.parse('{"' + decoded_params + '"}');
         } else {
             return {};
@@ -94,7 +94,7 @@ function update_fov() {
     draw_frame(fov_width_deg, fov_height_deg);
 
     // Save the state in the URL
-    update_url();
+    update_state();
 }    
 
 // Draw the framelines in the preview image based on the sensor size,
@@ -135,17 +135,24 @@ function update_preview(e) {
     $('#preview-image').attr('data-coverage', '4');
 
     // Save the state in the URL
-    update_url();
+    update_state();
 }
 
 // Get the overall state of the app, as it differs from the defaults
 function get_state() {
     var state = {};
     for (var key of Object.keys(defaults)) {
-        var value = $('#' + key).val();
-        if (value != defaults[key]) {
+        var elm = $('#' + key);
+
+        // Get our preferred value
+        var value = elm.val();
+        if ((elm.attr('type') == 'checkbox') || 
+              (elm.attr('type') == 'radio'))
+            value =  elm.prop('checked')
+
+        // Set the value in our resulting start object
+        if (value != defaults[key])
             state[key] = value;
-        }
     }
     return state;
 }
@@ -158,21 +165,23 @@ function load_state() {
     // default, and perform the necessary UI updates.
     for (var key of Object.keys(state)) {
         if (state[key] != defaults[key]) {
-            console.log("setting", key, state[key])
-            $('#' + key).val(state[key])
 
-            if (key == 'preview-custom') {
-                console.log("updating preview");
-                update_preview();
-            } else {
-                update_fov();
-            }
+            var elm = $('#' + key);
+
+            // Set our preferred value
+            if ((elm.attr('type') == 'checkbox') || 
+                  (elm.attr('type') == 'radio'))
+                elm.prop('checked', state[key])
+            else
+                elm.val(state[key])
+              
+            elm.change();
         }
     }
 }
 
 // Update the URL/history based on parameter selection
-function update_url() {
+function update_state() {
     if (history.pushState) {
         var current_params = window.location.search.substring(1);
         var new_params = $.param(get_state(), true);
@@ -186,12 +195,7 @@ function update_url() {
 }
 
 $(document).ready(function() {
-
-    // Load any state we get from paramers
-    load_state();
-
-    // Now set up our events
-
+    // Set up our events
     // If sensor-size is changed, and it's "other", show the
     // width/height fields
     $('#sensor-size').change(update_fov);
@@ -205,5 +209,8 @@ $(document).ready(function() {
     //     update_preview();
     // });
     $('#preview-custom').change(update_preview);
+
+    // Load any state we get from paramers
+    load_state();
 });
 
