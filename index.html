@@ -19,10 +19,11 @@
         <h1>Field of View</h1>
       </div>
       <div class="row">
-        
+
         <div id="preview-container" class="eight columns">
+            <img id="preview-loading" src="images/ApertureBlades.gif">
           <div id="frame-overlay"></div>
-          <img  data-coverage="4" id="preview-image" src="images/M31.jpg">
+          <img data-coverage="4" id="preview-image" src="images/M31.jpg">
         </div>
 
         <div class="four columns">
@@ -30,17 +31,10 @@
             <label for="preview-custom">Preview</label>
             <div id="preview-field">
               <input class="u-full-width" type="text" placeholder="Object (M31, NGC 6860)" id="preview-custom" value="M31">
-              <img id="preview-loading" src="images/ApertureBlades.gif">
             </div>
-            <!-- 
-            <label for="preview-coverage">Preview Coverage (degrees)</label>
-            <div id="preview-field">
-              <input class="u-full-width" type="text" placeholder="Integer" id="preview-coverage" value="4">
-              <img id="preview-loading" src="images/ApertureBlades.gif">
-            </div>
-            -->
-              <input class="u-full-width" type="hidden" placeholder="Integer" id="preview-coverage" value="4">
-            
+
+            <input class="u-full-width" type="hidden" placeholder="Integer" id="preview-coverage" value="4">
+
             <label for="sensor-size">Sensor Size (mm)</label>
             <select class="u-full-width" id="sensor-size">
               <option value="APS-C">APS-C (23.6mm x 15.7mm)</option>
@@ -51,19 +45,19 @@
               <option value="other">Other</option>
             </select>
 
-            <input class="u-full-width" type="text" placeholder="Sensor Width (mm)" id="sensor-width" style="display: none;"> 
+            <input class="u-full-width" type="text" placeholder="Sensor Width (mm)" id="sensor-width" style="display: none;">
             <input class="u-full-width" type="text" placeholder="Sensor Height (mm)" id="sensor-height" style="display: none;">
 
             <label for="focal-length">Focal Length (mm)</label>
-            <input class="u-full-width" type="text" placeholder="Focal Length (mm)" id="focal-length"> 
+            <input class="u-full-width" type="text" placeholder="Focal Length (mm)" id="focal-length">
 
             <label for="focal-reducer">Focal Reducer</label>
-            <input class="u-full-width" type="text" placeholder="Focal Reducer" id="focal-reducer" value="1"> 
+            <input class="u-full-width" type="text" placeholder="Focal Reducer" id="focal-reducer" value="1">
           </form>
 
           <form id="results">
             <label for="fov">Field of View (arc minutes)</label>
-            <input class="u-full-width" type="text" placeholder="Field of View (arc minutes)" id="fov" disabled="true"> 
+            <input class="u-full-width" type="text" placeholder="Field of View (arc minutes)" id="fov" disabled="true">
           </form>
         </div>
 

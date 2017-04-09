@@ -84,7 +84,6 @@ function update_fov() {
     // 3438 converts to arc minutes (arc minutes per radian)
     var fov_width_arc = fov_width * 3438;
     var fov_height_arc = fov_height * 3438;
-
     var fov_width_deg = fov_width * (180/Math.PI);
     var fov_height_deg = fov_height * (180/Math.PI);
     console.log("Degrees", fov_width_deg, fov_height_deg)
@@ -92,16 +91,25 @@ function update_fov() {
     // Update FOV value
     $('#fov').val(fov_width_arc.toFixed(1) + "' x " + fov_height_arc.toFixed(1) + "'");
 
-    draw_frame(fov_width_deg, fov_height_deg);
+    // Update the image coverage based on the field of view, and update
+    // the preview image if it has changed.
+    var preview_coverage = Math.round(fov_width_deg);
+    if ($('#preview-image').attr('data-coverage') < preview_coverage) {
+        $('#preview-image').attr('data-coverage', preview_coverage);
+        update_preview();
+    }
 
+    // Draw the frame
+    draw_frame(fov_width_deg, fov_height_deg);
+    
     // Save the state in the URL
     update_state();
-}    
+}
 
 // Draw the framelines in the preview image based on the sensor size,
 // focal length, and focal reducer
 function draw_frame(fov_width_deg, fov_height_deg) {
-    var preview_coverage = parseInt($('#preview-coverage').val());
+    var preview_coverage = parseInt($('#preview-image').attr('data-coverage'));
 
     // Draw frame over preview image
     var image_size = $('#preview-image').width();
@@ -117,9 +125,14 @@ function draw_frame(fov_width_deg, fov_height_deg) {
 }
 
 // Update the preview image with a new object query
-function update_preview(e) {
+function update_preview() {
     var preview_custom = $('#preview-custom').val();
-    var preview_coverage = parseInt($('#preview-coverage').val());
+
+    // Get preview coverage based on the field of view. We add 1 degree to
+    // the field of view so that there's a reasonable border.
+    var preview_fov = parseInt($('#preview-image').attr('data-coverage'));
+    var preview_coverage = preview_fov + 1
+
     console.log("searching for", preview_custom);
 
     if (preview_custom != '') {
@@ -129,18 +142,14 @@ function update_preview(e) {
 
         // Provide some feedback for custom image loads
         $('#preview-loading').css('display', 'block');
+        $('#preview-image').addClass('preview-blur')
         $('#preview-image').load(function() {
             $('#preview-loading').css('display', 'none');
+            $('#preview-image').removeClass('preview-blur')
         });
-    } 
+    }
 
     $('#preview-image').attr('src', preview_image);
-
-    // Update the fov for this coverage, if it's changed.
-    if ($('#preview-image').attr('data-coverage') != preview_coverage) {
-        update_fov();
-        $('#preview-image').attr('data-coverage', '4');
-    }
 
     // Save the state in the URL
     update_state();
@@ -154,7 +163,7 @@ function get_state() {
 
         // Get our preferred value
         var value = elm.val();
-        if ((elm.attr('type') == 'checkbox') || 
+        if ((elm.attr('type') == 'checkbox') ||
               (elm.attr('type') == 'radio'))
             value =  elm.prop('checked')
 
@@ -177,12 +186,12 @@ function load_state() {
             var elm = $('#' + key);
 
             // Set our preferred value
-            if ((elm.attr('type') == 'checkbox') || 
+            if ((elm.attr('type') == 'checkbox') ||
                   (elm.attr('type') == 'radio'))
                 elm.prop('checked', state[key])
             else
                 elm.val(state[key])
-              
+
             elm.change();
         }
     }
@@ -211,9 +220,7 @@ $(document).ready(function() {
     $('#sensor-height').change(update_fov);
     $('#focal-length').change(update_fov);
     $('#focal-reducer').change(update_fov);
-
     $('#preview-custom').change(update_preview);
-    // $('#preview-coverage').change(update_preview);
 
     // Load any state we get from paramers
     load_state();
