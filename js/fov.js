@@ -94,14 +94,17 @@ function update_fov() {
     // Update the image coverage based on the field of view, and update
     // the preview image if it has changed.
     var preview_coverage = Math.round(fov_width_deg);
-    if ($('#preview-image').attr('data-coverage') < preview_coverage) {
-        $('#preview-image').attr('data-coverage', preview_coverage);
+    var current_coverage = parseInt($('#preview-image').attr('data-coverage'));
+    if (((current_coverage - 2 > preview_coverage) ||
+         (current_coverage + 2 < preview_coverage)) &&
+         ((preview_coverage + 2 != current_coverage)) {
+        $('#preview-image').attr('data-coverage', preview_coverage + 2);
         update_preview();
     }
 
     // Draw the frame
     draw_frame(fov_width_deg, fov_height_deg);
-    
+
     // Save the state in the URL
     update_state();
 }
@@ -144,6 +147,7 @@ function update_preview() {
         $('#preview-loading').css('display', 'block');
         $('#preview-image').addClass('preview-blur')
         $('#preview-image').load(function() {
+            console.log("Loaded");
             $('#preview-loading').css('display', 'none');
             $('#preview-image').removeClass('preview-blur')
         });
