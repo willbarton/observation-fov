@@ -97,7 +97,7 @@ function update_fov() {
     var current_coverage = parseInt($('#preview-image').attr('data-coverage'));
     if (((current_coverage - 2 > preview_coverage) ||
          (current_coverage + 2 < preview_coverage)) &&
-         ((preview_coverage + 2 != current_coverage)) {
+         (preview_coverage + 2 != current_coverage)) {
         $('#preview-image').attr('data-coverage', preview_coverage + 2);
         update_preview();
     }
